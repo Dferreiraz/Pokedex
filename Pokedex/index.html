@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Pokedex</title>
+
+  <!-- CSS interno para estilizar a aplicação -->
+  <style>
+    /* Reset básico */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    /* Container principal da pokedex */
+    .pokedex {
+      background-color: #ff3b3b;
+      width: 300px;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+
+    /* Tela onde aparece o Pokémon */
+    .screen {
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+
+    .screen img {
+      width: 120px;
+      height: 120px;
+    }
+
+    /* Nome do Pokémon */
+    .pokemon-name {
+      font-size: 20px;
+      margin: 10px 0;
+      text-transform: capitalize;
+    }
+
+    /* Input de busca */
+    input {
+      padding: 8px;
+      width: 80%;
+      border-radius: 5px;
+      border: none;
+      margin-bottom: 10px;
+    }
+
+    /* Botão */
+    button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      background-color: #333;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Estrutura principal da pokedex -->
+  <div class="pokedex">
+
+    <!-- Tela onde aparecem os dados -->
+    <div class="screen">
+      <img id="pokemon-image" src="" alt="Pokemon">
+      <div id="pokemon-name" class="pokemon-name">---</div>
+      <div id="pokemon-id">ID: ---</div>
+    </div>
+
+    <!-- Campo de entrada para buscar Pokémon -->
+    <input type="text" id="pokemon-input" placeholder="Digite o nome ou número">
+
+    <!-- Botão que dispara a busca -->
+    <button onclick="buscarPokemon()">Buscar</button>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // Função principal que busca o Pokémon
+    async function buscarPokemon() {
+      // Pegando o valor digitado pelo usuário
+      const input = document.getElementById('pokemon-input').value.toLowerCase();
+
+      // Elementos que serão atualizados
+      const nome = document.getElementById('pokemon-name');
+      const imagem = document.getElementById('pokemon-image');
+      const id = document.getElementById('pokemon-id');
+
+      try {
+        // Fazendo requisição para a API pública de Pokémon
+        const resposta = await fetch(`https://pokeapi.co/api/v2/pokemon/${input}`);
+
+        // Convertendo resposta para JSON
+        const dados = await resposta.json();
+
+        // Atualizando nome do Pokémon
+        nome.textContent = dados.name;
+
+        // Atualizando imagem (sprite oficial)
+        imagem.src = dados.sprites.front_default;
+
+        // Atualizando ID
+        id.textContent = 'ID: ' + dados.id;
+
+      } catch (erro) {
+        // Caso dê erro (ex: Pokémon não encontrado)
+        nome.textContent = 'Não encontrado';
+        imagem.src = '';
+        id.textContent = 'ID: ---';
+      }
+    }
+  </script>
+
+</body>
+</html>
