@@ -49,8 +49,13 @@ ________________________________________________________________________________
 A interface simula uma Pokédex clássica com:
 
 Tela de exibição
+
 Campo de busca
+
 Botão de ação
+
+![Preview da Pokédex](img/preview.png)
+![Preview da Pokédex](images/preview2.png)
 ________________________________________________________________________________________________________________________________________________
 ⚠️ Observações
 
