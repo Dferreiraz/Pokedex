@@ -1,32 +1,25 @@
-📱 Pokédex Web
+## 📱 Pokédex Web
 
 Uma Pokédex simples desenvolvida com HTML, CSS e JavaScript, que permite buscar Pokémon pelo nome ou número utilizando a API pública PokeAPI.
 ________________________________________________________________________________________________________________________________________________
-🚀 Funcionalidades
+## 🚀 Funcionalidades
 
-
-Buscar Pokémon pelo nome ou ID
-
-🖼️ Exibir imagem do Pokémon
-
-📛 Mostrar nome e número (ID)
-
-⚠️ Tratamento de erro para Pokémon não encontrados
+- Buscar Pokémon pelo nome ou ID
+- 🖼️ Exibir imagem do Pokémon
+- 📛 Mostrar nome e número (ID)
+- ⚠️ Tratamento de erro para Pokémon não encontrados
 
 ________________________________________________________________________________________________________________________________________________
-🛠️ Tecnologias utilizadas
+## 🛠️ Tecnologias utilizadas
 
-HTML5
-
-CSS3
-
-JavaScript (Vanilla)
-
-API: https://pokeapi.co/
+- HTML5
+- CSS3
+- JavaScript (Vanilla)
+- API: https://pokeapi.co/
 ________________________________________________________________________________________________________________________________________________
-📂 Estrutura do projeto
+## 📂 Estrutura do projeto
 
-pokedex/
+ pokedex/
 
 │
 
@@ -34,60 +27,52 @@ pokedex/
 
 └── README.md
 ________________________________________________________________________________________________________________________________________________
-▶️ Como usar
+## ▶️ Como usar
 
 Baixe ou clone o repositório:
 
-git clone https://github.com/seu-usuario/pokedex.git
-
-Abra o arquivo index.html no navegador.
-
-Digite o nome ou número de um Pokémon (ex: pikachu ou 25) e clique em Buscar.
+- git clone https://github.com/seu-usuario/pokedex.git
+- Abra o arquivo index.html no navegador.
+- Digite o nome ou número de um Pokémon (ex: pikachu ou 25) e clique em Buscar.
 ________________________________________________________________________________________________________________________________________________
-📸 Preview
+## 📸 Preview
 
 A interface simula uma Pokédex clássica com:
 
-Tela de exibição
-
-Campo de busca
-
-Botão de ação
+- Tela de exibição  
+- Campo de busca  
+- Botão de ação  
 
 ![Preview da Pokédex](img/preview.png)
 ![Preview da Pokédex](img/preview2.png)
 ________________________________________________________________________________________________________________________________________________
-⚠️ Observações
+## ⚠️ Observações
 
-É necessário estar conectado à internet para buscar os dados da API.
+- É necessário estar conectado à internet para buscar os dados da API.
+- Alguns Pokémon podem não ter imagem disponível.
 
-Alguns Pokémon podem não ter imagem disponível.
-Dferreiraz
-🔮 Próximas melhorias (Parte 2.0)
+________________________________________________________________________________________________________________________________________________
+## 🔮 Próximas melhorias (Parte 2.0)
 
 Separar arquivos em:  
 
-index.html
-
-style.css
-
-script.js
-
-Adicionar:
-
-Tipos do Pokémon
-
-Altura e peso
-
-Botões de navegação (próximo/anterior)
-
-Melhorar layout e responsividade
+- index.html
+- style.css
+- script.js
 ________________________________________________________________________________________________________________________________________________
-📌 Versões do projeto
+## Adicionar:
 
-✅ v1.0 – HTML, CSS e JS no mesmo arquivo
-🔜 v2.0 – Arquivos separados
-🔜 v3.0 – Novas funcionalidades e melhorias visuais
+- Tipos do Pokémon
+- Altura e peso
+- Botões de navegação (próximo/anterior)
+- Melhorar layout e responsividade
+________________________________________________________________________________________________________________________________________________
+## 📌 Versões do projeto
+
+- ✅ v1.0 – HTML, CSS e JS no mesmo arquivo
+- 🔜 v2.0 – Arquivos separados
+- 🔜 v3.0 – Novas funcionalidades e melhorias visuais
 ________________________________________________________________________________________________________________________________________________
 Autor
+
 Dferreiraz
