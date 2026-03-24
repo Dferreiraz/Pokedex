@@ -55,7 +55,7 @@ Campo de busca
 Botão de ação
 
 ![Preview da Pokédex](img/preview.png)
-![Preview da Pokédex](images/preview2.png)
+![Preview da Pokédex](img/preview2.png)
 ________________________________________________________________________________________________________________________________________________
 ⚠️ Observações
 
