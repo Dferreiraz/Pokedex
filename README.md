@@ -75,7 +75,7 @@ ________________________________________________________________________________
 ## 📌 Versões do projeto
 
 - ✅ v1.0 – HTML, CSS e JS no mesmo arquivo
-- 🔜 v2.0 – Arquivos separados
+- ✅ v2.0 – Arquivos separados
 - 🔜 v3.0 – Novas funcionalidades e melhorias visuais
 ________________________________________________________________________________________________________________________________________________
 Autor
