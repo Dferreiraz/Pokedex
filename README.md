@@ -31,7 +31,7 @@ ________________________________________________________________________________
 
 Baixe ou clone o repositório:
 
-- git clone https://github.com/seu-usuario/pokedex.git
+- git clone https://github.com/Dferreiraz/pokedex.git
 - Abra o arquivo index.html no navegador.
 - Digite o nome ou número de um Pokémon (ex: pikachu ou 25) e clique em Buscar.
 ________________________________________________________________________________________________________________________________________________
