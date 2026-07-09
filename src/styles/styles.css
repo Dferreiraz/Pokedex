@@ -1,0 +1,142 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #222;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 900px;
+}
+
+.pokedex {
+    background-color: #e53935;
+    width: 420px;
+    padding: 25px;
+    border-radius: 25px;
+    box-shadow: 0px 10px 25px rgba(0,0,0,0.5);
+    text-align: center;
+}
+
+.pokedex h1 {
+    color: white;
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.screen {
+    background-color: #eeeeee;
+    width: 370px;
+    padding: 20px;
+    border-radius: 20px;
+}
+
+.screen img {
+    width: 180px;
+    height: 180px;
+}
+
+#pokemon-name {
+    font-size: 28px;
+    text-transform: capitalize;
+    margin-top: 10px;
+}
+
+#pokemon-id {
+    color: #555;
+    font-size: 18px;
+}
+
+#pokemon-types {
+    margin-top: 15px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#pokemon-types span {
+    display: inline-block;
+    background-color: #ddd;
+    padding: 5px 10px;
+    margin: 5px;
+    border-radius: 10px;
+}
+
+.description,
+.info,
+.abilities,
+.stats {
+    background-color: white;
+    margin-top: 15px;
+    padding: 15px;
+    border-radius: 15px;
+}
+
+.description h3,
+.abilities h3,
+.stats h3 {
+    margin-bottom: 10px;
+    font-size: 20px;
+}
+
+#pokemon-description {
+    font-size: 15px;
+    line-height: 22px;
+}
+
+#pokemon-abilities {
+    list-style: none;
+}
+
+#pokemon-abilities li {
+    background-color: #ddd;
+    margin-top: 5px;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.stats p {
+    margin-top: 8px;
+    font-size: 16px;
+}
+
+input {
+    width: 250px;
+    height: 40px;
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    font-size: 16px;
+}
+
+button {
+    width: 120px;
+    height: 40px;
+    margin-top: 10px;
+    border-radius: 10px;
+    border: none;
+    background-color: #111;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #444;
+}
+
+.navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+.navigation button {
+    width: 140px;
+    height: 40px;
+    border-radius: 10px;
+}
