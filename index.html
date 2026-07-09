@@ -12,51 +12,204 @@
 
 
 <body>
-    <div class="pokedex">
-        <h1>Pokedex</h1>
-        <div class="screen">
-            <img id="pokemon-image" src="" alt="Pokemon">
-            <h2 id="pokemon-name">---</h2>
-            <p id="pokemon-id">ID: ---</p>
 
+    <header class="site-header">
+        <div class="logo-mark" aria-hidden="true"></div>
+        <div class="title-block">
+            <h1>Pokédex</h1>
+            <p>Explore todos os Pokémon da PokéAPI.</p>
+        </div>
+        <form class="search-form" id="searchForm">
+            <input id="searchInput" type="text" placeholder="Buscar por nome ou número (ex: pikachu, 25)"
+                aria-label="Buscar Pokémon">
+            <button type="submit">Pesquisar</button>
+        </form>
+    </header>
 
-            <!-- Tipos -->
-            <div id="pokemon-types">Tipo: ---</div>
+    <div class="app-layout">
 
-            <!-- Descrição -->
-             <div class="description">
-                <h3>Descrição</h3>
-                <p id="pokemon-description">---</p>
-            </div>
+        <nav class="sidebar" aria-label="Menu principal">
+            <button id="navHome" class="active"><span class="ico">🏠</span>Início</button>
+            <button id="navFav"><span class="ico">⭐</span>Favoritos<span class="badge-count hidden"
+                    id="favCount">0</span></button>
+            <button id="navTeam"><span class="ico">❤️</span>Time<span class="badge-count hidden"
+                    id="teamCount">0</span></button>
+            <button id="navAbout"><span class="ico">📖</span>Sobre</button>
+        </nav>
 
-            <!-- Informações -->
-            <div class="info">
-                <p id="pokemon-height">Altura: ---</p>
-                <p id="pokemon-weight">Peso: ---</p>
-            </div>
+        <div class="pokedex-wrap">
+            <div class="pokedex">
 
-            <!-- Habilidades -->
-            <div class="abilities">
-                <h3>Habilidades</h3>
-                <ul id="pokemon-abilities"></ul>
-            </div>
+                <!-- ===== LEFT PANEL — MAIN SCREEN ===== -->
+                <section class="panel panel-left" aria-label="Tela principal da Pokédex">
+                    <div class="bezel-top">
+                        <div class="lens"></div>
+                        <div class="leds">
+                            <div class="led red"></div>
+                            <div class="led yellow"></div>
+                            <div class="led green"></div>
+                        </div>
+                    </div>
 
-            <!-- Status -->
-            <div class="stats">
-                <h3>Status</h3>
-                <p id="hp">HP: ---</p>
-                <p id="attack">Ataque: ---</p>
-                <p id="defense">Defesa: ---</p>
-                <p id="speed">Velocidade: ---</p>
+                    <div class="screen" id="mainScreen">
+                        <div class="loading-overlay" id="loadingLeft">Carregando dados...</div>
+                        <div class="screen-top-row">
+                            <span id="pokeNum">Nº ---</span>
+                            <span id="pokeGen">GEN -</span>
+                        </div>
+                        <h2 class="poke-name" id="pokeName">selecione um pokémon</h2>
+
+                        <div class="poke-image-frame">
+                            <span class="placeholder-mark" id="imgPlaceholder">?</span>
+                            <img id="pokeImg" alt="" class="hidden">
+                        </div>
+
+                        <div class="type-row" id="typeRow"></div>
+
+                        <div class="quick-stats">
+                            <div><span>Altura</span><strong id="statHeight">--</strong></div>
+                            <div><span>Peso</span><strong id="statWeight">--</strong></div>
+                            <div><span>Exp. Base</span><strong id="statExp">--</strong></div>
+                        </div>
+
+                        <div class="speaker-grille">
+                            <div class="line"></div>
+                            <div class="line"></div>
+                            <div class="line"></div>
+                        </div>
+
+                        <div class="nav-controls">
+                            <button class="nav-btn" id="btnPrev">◀ Anterior</button>
+                            <div class="dpad-decor" aria-hidden="true"></div>
+                            <button class="nav-btn" id="btnNext">Próximo ▶</button>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="hinge" aria-hidden="true"></div>
+
+                <!-- ===== RIGHT PANEL — CONTROLS ===== -->
+                <section class="panel panel-right" aria-label="Painel de controle da Pokédex">
+                    <div class="bezel-top">
+                        <div class="leds">
+                            <div class="led green"></div>
+                        </div>
+                        <div class="mini-screen" id="miniScreen" style="flex:1;">Aguardando seleção...</div>
+                    </div>
+
+                    <div class="tab-grid" role="tablist" aria-label="Abas de informação">
+                        <button class="tab-btn active" data-tab="info" role="tab" aria-selected="true"><span
+                                class="ico">📋</span><span>Informações</span></button>
+                        <button class="tab-btn" data-tab="stats" role="tab" aria-selected="false"><span
+                                class="ico">⚔️</span><span>Estatísticas</span></button>
+                        <button class="tab-btn" data-tab="evo" role="tab" aria-selected="false"><span
+                                class="ico">🧬</span><span>Evoluções</span></button>
+                        <button class="tab-btn" data-tab="abilities" role="tab" aria-selected="false"><span
+                                class="ico">🎒</span><span>Habilidades</span></button>
+                        <button class="tab-btn" data-tab="habitat" role="tab" aria-selected="false"><span
+                                class="ico">🌎</span><span>Habitat</span></button>
+                    </div>
+
+                    <div class="content-screen" style="position:relative;">
+                        <div class="loading-overlay hidden" id="loadingRight">Carregando...</div>
+
+                        <div class="tab-pane active" id="pane-info">
+                            <h3>INFORMAÇÕES</h3>
+                            <dl class="info-grid">
+                                <div>
+                                    <dt>Nome</dt>
+                                    <dd id="infoName">—</dd>
+                                </div>
+                                <div>
+                                    <dt>Número</dt>
+                                    <dd id="infoNum">—</dd>
+                                </div>
+                                <div>
+                                    <dt>Categoria</dt>
+                                    <dd id="infoCategory">—</dd>
+                                </div>
+                                <div>
+                                    <dt>Altura / Peso</dt>
+                                    <dd id="infoHW">—</dd>
+                                </div>
+                                <div class="full">
+                                    <dt>Descrição</dt>
+                                    <dd>
+                                        <p class="desc-text" id="infoDesc">Use a busca ou os botões Anterior/Próximo
+                                            para carregar um Pokémon.</p>
+                                    </dd>
+                                </div>
+                            </dl>
+                        </div>
+
+                        <div class="tab-pane" id="pane-stats">
+                            <h3>ESTATÍSTICAS</h3>
+                            <div id="statsContainer"></div>
+                        </div>
+
+                        <div class="tab-pane" id="pane-evo">
+                            <h3>LINHA EVOLUTIVA</h3>
+                            <div class="evo-row" id="evoRow">
+                                <p class="desc-text">Sem dados de evolução.</p>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane" id="pane-abilities">
+                            <h3>HABILIDADES</h3>
+                            <div id="abilitiesContainer"></div>
+                        </div>
+
+                        <div class="tab-pane" id="pane-habitat">
+                            <h3>HABITAT &amp; DETALHES</h3>
+                            <div class="habitat-grid">
+                                <div>
+                                    <h4>Fraquezas</h4>
+                                    <div class="chip-list" id="weakList"></div>
+                                </div>
+                                <div>
+                                    <h4>Resistências</h4>
+                                    <div class="chip-list" id="resistList"></div>
+                                </div>
+                                <div>
+                                    <h4>Habitat</h4>
+                                    <p id="habitatVal">—</p>
+                                </div>
+                                <div>
+                                    <h4>Geração</h4>
+                                    <p id="genVal">—</p>
+                                </div>
+                                <div>
+                                    <h4>Taxa de Captura</h4>
+                                    <p id="captureVal">—</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bottom-controls" aria-hidden="true">
+                        <button class="deco-btn d1"></button>
+                        <button class="deco-btn d1"></button>
+                        <button class="deco-btn d2"></button>
+                        <button class="deco-btn d2"></button>
+                        <div class="deco-btn small-led"></div>
+                    </div>
+                </section>
+
             </div>
         </div>
-        <input type="text" id="pokemon-input" placeholder="Digite o nome ou número">
+    </div>
 
-        <button id="search-btn">Buscar</button>
-        
-        <div class="navigation">
-            <button id="prev-btn">◀ Anterior</button>
-            <button id="next-btn">Próximo ▶</button>
+    <footer class="site-footer">
+        <p>Projeto desenvolvido para estudos de JavaScript utilizando a PokéAPI por <a href="https://github.com/Dferreiraz" target="_blank">Davi Ferreira</a>.</p>
+    </footer>
+
+    <div class="modal-overlay hidden" id="aboutModal">
+        <div class="modal-box">
+            <h2>SOBRE</h2>
+            <p>Este é um template visual de Pokédex, inspirado nos jogos clássicos e modernos da franquia Pokémon. Os
+                dados são carregados em tempo real da <strong>PokéAPI</strong> para fins de estudo de JavaScript e
+                consumo de APIs.</p>
+            <button id="closeAbout">Fechar</button>
         </div>
     </div>
 </body>
