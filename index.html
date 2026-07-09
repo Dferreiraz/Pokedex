@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokedex</title>
+
+    <link rel="stylesheet" href="./src/styles/styles.css">
+    <script src="src/js/main.js" defer></script>
+</head>
+
+
+<body>
+    <div class="pokedex">
+        <h1>Pokedex</h1>
+        <div class="screen">
+            <img id="pokemon-image" src="" alt="Pokemon">
+            <h2 id="pokemon-name">---</h2>
+            <p id="pokemon-id">ID: ---</p>
+
+
+            <!-- Tipos -->
+            <div id="pokemon-types">Tipo: ---</div>
+
+            <!-- Descrição -->
+             <div class="description">
+                <h3>Descrição</h3>
+                <p id="pokemon-description">---</p>
+            </div>
+
+            <!-- Informações -->
+            <div class="info">
+                <p id="pokemon-height">Altura: ---</p>
+                <p id="pokemon-weight">Peso: ---</p>
+            </div>
+
+            <!-- Habilidades -->
+            <div class="abilities">
+                <h3>Habilidades</h3>
+                <ul id="pokemon-abilities"></ul>
+            </div>
+
+            <!-- Status -->
+            <div class="stats">
+                <h3>Status</h3>
+                <p id="hp">HP: ---</p>
+                <p id="attack">Ataque: ---</p>
+                <p id="defense">Defesa: ---</p>
+                <p id="speed">Velocidade: ---</p>
+            </div>
+        </div>
+        <input type="text" id="pokemon-input" placeholder="Digite o nome ou número">
+
+        <button id="search-btn">Buscar</button>
+        
+        <div class="navigation">
+            <button id="prev-btn">◀ Anterior</button>
+            <button id="next-btn">Próximo ▶</button>
+        </div>
+    </div>
+</body>
+
+</html>
