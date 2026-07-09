@@ -1,0 +1,64 @@
+:root{
+  --red:#E3350D;
+  --red-dark:#A81F0E;
+  --red-darker:#701509;
+  --red-highlight:#FF6B4A;
+  --white:#F5F4EF;
+  --black:#1B1B19;
+  --gray-light:#D9D8CF;
+  --gray-mid:#9C9B92;
+  --gray-dark:#46453F;
+  --blue:#3E82C4;
+  --blue-light:#79B7EE;
+  --blue-dark:#265D8F;
+  --green:#3FAE55;
+  --green-dark:#237339;
+  --yellow:#FFD93D;
+  --screen-bg:#E9F1E6;
+  --screen-line:#c3d6bd;
+  --screen-dark:#182b1c;
+  --font-display:'Press Start 2P', monospace;
+  --font-screen:'VT323', monospace;
+  --font-body:'Rubik', sans-serif;
+  --radius-lg:28px;
+  --radius-md:16px;
+  --radius-sm:8px;
+}
+
+*{
+    box-sizing:border-box;
+}
+
+html,body{
+    margin:0;
+    padding:0;
+}
+
+body{
+  background:
+    radial-gradient(ellipse at top left, #2a2a26 0%, #141412 55%, #0c0c0b 100%);
+  color:var(--white);
+  font-family:var(--font-body);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+::selection{
+    background:var(--red);
+    color:var(--white);
+}
+
+:focus-visible
+{
+    outline:3px solid var(--yellow);
+     outline-offset:2px;
+}
+
+button{
+    font-family:inherit;
+    cursor:pointer;
+}
+
+
+
+
