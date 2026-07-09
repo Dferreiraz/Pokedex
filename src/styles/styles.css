@@ -19,6 +19,7 @@ body {
     border-radius: 25px;
     box-shadow: 0px 10px 25px rgba(0,0,0,0.5);
     text-align: center;
+    margin: 20px 0;
 }
 
 .pokedex h1 {
