@@ -1,0 +1,104 @@
+.sidebar {
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 280px;
+    background: var(--bg-primary);
+    border-left: 2px solid var(--border-color);
+    padding: 24px;
+    overflow-y: auto;
+    z-index: 100;
+}
+
+.sidebar-section {
+    margin-bottom: 32px;
+}
+
+.sidebar-title {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 12px;
+    color: var(--text-primary);
+    margin: 0 0 16px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.favorites-list,
+.team-list {
+    min-height: 100px;
+}
+
+.empty-message {
+    color: var(--text-secondary);
+    font-size: 14px;
+    text-align: center;
+    padding: 20px;
+}
+
+.favorite-items,
+.team-items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.favorite-item,
+.team-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    transition: transform 0.1s;
+}
+
+.favorite-item:hover,
+.team-item:hover {
+    transform: translateX(-4px);
+}
+
+.favorite-item img,
+.team-item img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.favorite-item span,
+.team-item span {
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    color: var(--text-primary);
+}
+
+.clear-team-button {
+    width: 100%;
+    margin-top: 12px;
+    padding: 10px;
+    background: var(--danger);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: 'VT323', monospace;
+    font-size: 16px;
+    cursor: pointer;
+    transition: filter 0.2s;
+}
+
+.clear-team-button:hover {
+    filter: brightness(1.1);
+}
+
+@media (max-width: 1024px) {
+    .sidebar {
+        position: relative;
+        width: 100%;
+        border-left: none;
+        border-bottom: 2px solid var(--border-color);
+    }
+}
