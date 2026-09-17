@@ -1,60 +1,33 @@
-:root{
-  --red:#E3350D;
-  --red-dark:#A81F0E;
-  --red-darker:#701509;
-  --red-highlight:#FF6B4A;
-  --white:#F5F4EF;
-  --black:#1B1B19;
-  --gray-light:#D9D8CF;
-  --gray-mid:#9C9B92;
-  --gray-dark:#46453F;
-  --blue:#3E82C4;
-  --blue-light:#79B7EE;
-  --blue-dark:#265D8F;
-  --green:#3FAE55;
-  --green-dark:#237339;
-  --yellow:#FFD93D;
-  --screen-bg:#E9F1E6;
-  --screen-line:#c3d6bd;
-  --screen-dark:#182b1c;
-  --font-display:'Press Start 2P', monospace;
-  --font-screen:'VT323', monospace;
-  --font-body:'Rubik', sans-serif;
-  --radius-lg:28px;
-  --radius-md:16px;
-  --radius-sm:8px;
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rubik&family=VT323&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Rubik', sans-serif;
+    background: radial-gradient(ellipse at top left, #2a2a26 0%, #141412 55%, #0c0c0b 100%);
+    color: #F5F4EF;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 }
 
-*{
-    box-sizing:border-box;
+@keyframes lensGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 3px #1B1B19, inset 0 0 10px rgba(255,255,255,0.6), 0 0 6px 2px rgba(121,183,238,0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 3px #1B1B19, inset 0 0 10px rgba(255,255,255,0.6), 0 0 16px 6px rgba(121,183,238,0.75);
+  }
 }
 
-html,body{
-    margin:0;
-    padding:0;
+@keyframes blink {
+  0%, 88%, 100% { opacity: 1; }
+  90%, 96% { opacity: 0.25; }
 }
 
-body{
-  background:
-    radial-gradient(ellipse at top left, #2a2a26 0%, #141412 55%, #0c0c0b 100%);
-  color:var(--white);
-  font-family:var(--font-body);
-  min-height:100vh;
-  overflow-x:hidden;
-}
-
-::selection{
-    background:var(--red);
-    color:var(--white);
-}
-
-:focus-visible
-{
-    outline:3px solid var(--yellow);
-     outline-offset:2px;
-}
-
-button{
-    font-family:inherit;
-    cursor:pointer;
+@keyframes fadeIn {
+  to { opacity: 1; }
 }
