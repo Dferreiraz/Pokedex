@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 const API = 'https://pokeapi.co/api/v2/';
+const MAX_ID = 1025;
 
 const typeColors = {
   normal: '#A8A77A', fire: '#EE8130', water: '#6390F0', electric: '#F7D02C',
@@ -8,7 +9,7 @@ const typeColors = {
   ground: '#E2BF65', flying: '#A98FF3', psychic: '#F95587', bug: '#A6B91A',
   rock: '#B6A136', ghost: '#735797', dragon: '#6F35FC', dark: '#705746',
   steel: '#B7B7CE', fairy: '#D685AD'
-}
+};
 
 const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -20,32 +21,74 @@ function PokedexShell({ searchQuery }) {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('info');
   const [hasSearched, setHasSearched] = useState(false);
-  
-  const [evoData, setEvoData] = useState([]);
+
+  const [evoData, setEvoData] = useState({ baseId: null, baseName: '', evolutions: [] });
   const [abilitiesData, setAbilitiesData] = useState([]);
   const [habitatData, setHabitatData] = useState({});
+  const [variationsData, setVariationsData] = useState([]);
 
   const fetchJSON = async (url) => {
     const res = await fetch(url);
     if (!res.ok) throw new Error('not found');
     return res.json();
-  }
+  };
 
   const pickFlavorText = (entries) => {
     let entry = entries.find(e => e.language.name === 'pt') || entries.find(e => e.language.name === 'en');
     if (!entry) return 'Descrição não disponível.';
     return entry.flavor_text.replace(/[\n\f\r]/g, ' ');
-  }
+  };
+
+  const getEvolutionCondition = (details) => {
+    if (!details) return '';
+    const parts = [];
+
+    if (details.item) {
+      parts.push(`Use ${details.item.name.replace(/-/g, ' ')}`);
+    }
+    if (details.min_happiness && details.min_happiness >= 220) {
+      parts.push('High Friendship');
+    }
+    if (details.time_of_day) {
+      parts.push(capitalize(details.time_of_day) + ' time');
+    }
+    if (details.known_move_type) {
+      parts.push(`After ${details.known_move_type.name}-type move`);
+    }
+    if (details.location) {
+      parts.push(`Level up near ${details.location.name.replace(/-/g, ' ')}`);
+    }
+    if (details.trigger?.name === 'level-up' && parts.length === 0) {
+      parts.push('Level up');
+    }
+    if (details.min_beauty) {
+      parts.push('High Beauty');
+    }
+    if (details.gender) {
+      parts.push(details.gender === 1 ? 'Female only' : 'Male only');
+    }
+    if (details.held_item) {
+      parts.push(`Holding ${details.held_item.name.replace(/-/g, ' ')}`);
+    }
+    if (details.trade_species) {
+      parts.push(`Trade for ${details.trade_species.name}`);
+    }
+    if (details.min_affection && details.min_affection >= 2) {
+      parts.push('High Affection');
+    }
+
+    return parts.join(', ');
+  };
 
   const loadPokemon = useCallback(async (idOrName) => {
     if (!idOrName) return;
-    
+
     setLoading(true);
     setError(null);
     try {
       const pokeData = await fetchJSON(API + 'pokemon/' + idOrName);
       const speciesData = await fetchJSON(API + 'pokemon-species/' + pokeData.id);
-      
+
       setCurrentId(pokeData.id);
       setPokemon(pokeData);
       setSpecies(speciesData);
@@ -53,14 +96,15 @@ function PokedexShell({ searchQuery }) {
       await Promise.all([
         loadEvolution(speciesData),
         loadAbilities(pokeData),
-        loadHabitat(pokeData, speciesData)
+        loadHabitat(pokeData, speciesData),
+        loadVariations(speciesData)
       ]);
     } catch (err) {
       setError('Pokémon não encontrado.');
     } finally {
       setLoading(false);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (searchQuery && searchQuery.trim() !== '') {
@@ -70,21 +114,41 @@ function PokedexShell({ searchQuery }) {
       loadPokemon(1);
       setHasSearched(true);
     }
-  }, [searchQuery, loadPokemon])
+  }, [searchQuery, loadPokemon]);
 
   const loadEvolution = async (speciesData) => {
     try {
       const chainData = await fetchJSON(speciesData.evolution_chain.url);
-      const nodes = [];
-      const walk = (node) => {
-        const idMatch = node.species.url.match(/\/pokemon-species\/(\d+)\//);
-        nodes.push({ name: node.species.name, id: idMatch ? idMatch[1] : null });
-        if (node.evolves_to && node.evolves_to.length) walk(node.evolves_to[0]);
+      const baseNode = chainData.chain;
+      const baseId = baseNode.species.url.match(/\/pokemon-species\/(\d+)\//)[1];
+      const baseName = baseNode.species.name;
+
+      const evolutions = [];
+
+      const walkAll = (node) => {
+        if (node.evolves_to && node.evolves_to.length > 0) {
+          node.evolves_to.forEach(evo => {
+            const evoId = evo.species.url.match(/\/pokemon-species\/(\d+)\//)[1];
+            const details = evo.evolution_details[0];
+            const condition = getEvolutionCondition(details);
+
+            evolutions.push({
+              id: evoId,
+              name: evo.species.name,
+              condition: condition
+            });
+
+            walkAll(evo);
+          });
+        }
       };
-      walk(chainData.chain);
-      setEvoData(nodes);
-    } catch (e) { setEvoData([]); }
-  }
+
+      walkAll(baseNode);
+      setEvoData({ baseId, baseName, evolutions });
+    } catch (e) {
+      setEvoData({ baseId: null, baseName: '', evolutions: [] });
+    }
+  };
 
   const loadAbilities = async (pokeData) => {
     try {
@@ -100,8 +164,8 @@ function PokedexShell({ searchQuery }) {
         return { name: a.ability.name.replace(/-/g, ' '), isHidden: a.is_hidden, effect };
       });
       setAbilitiesData(mapped);
-    } catch (e) { setAbilitiesData([]) }
-  }
+    } catch (e) { setAbilitiesData([]); }
+  };
 
   const loadHabitat = async (pokeData, speciesData) => {
     try {
@@ -111,8 +175,8 @@ function PokedexShell({ searchQuery }) {
         td.damage_relations.double_damage_from.forEach(t => weak.add(t.name));
         td.damage_relations.half_damage_from.forEach(t => resist.add(t.name));
       });
-      resist.forEach(t => weak.delete(t))
-      
+      resist.forEach(t => weak.delete(t));
+
       setHabitatData({
         habitat: speciesData.habitat ? capitalize(speciesData.habitat.name.replace(/-/g, ' ')) : 'Desconhecido',
         generation: capitalize(speciesData.generation.name.replace('-', ' ')),
@@ -120,18 +184,65 @@ function PokedexShell({ searchQuery }) {
         weak: Array.from(weak),
         resist: Array.from(resist)
       });
-    } catch (e) { setHabitatData({ weak: [], resist: [] }) }
-  }
+    } catch (e) { setHabitatData({ weak: [], resist: [] }); }
+  };
+
+  const loadVariations = async (speciesData) => {
+    try {
+      const varieties = speciesData.varieties || [];
+      const variations = [];
+
+      for (const variety of varieties) {
+        if (variety.is_default) continue;
+
+        try {
+          const variantPoke = await fetchJSON(variety.pokemon.url);
+          const sprite = variantPoke.sprites.other?.['official-artwork']?.front_default ||
+            variantPoke.sprites.front_default;
+
+          // Detectar tipo de variação
+          let variationType = 'Forma Alternativa';
+          if (variantPoke.name.includes('mega')) {
+            variationType = 'Mega Evolução';
+          } else if (variantPoke.name.includes('gigantamax') || variantPoke.name.includes('g-max')) {
+            variationType = 'Gigantamax';
+          } else if (variantPoke.name.includes('alolan')) {
+            variationType = 'Forma Alola';
+          } else if (variantPoke.name.includes('galarian')) {
+            variationType = 'Forma Galar';
+          } else if (variantPoke.name.includes('hisuian')) {
+            variationType = 'Forma Hisui';
+          } else if (variantPoke.name.includes('paldean')) {
+            variationType = 'Forma Paldea';
+          }
+
+          variations.push({
+            id: variantPoke.id,
+            name: variantPoke.name.replace(/-/g, ' '),
+            sprite: sprite,
+            types: variantPoke.types.map(t => t.type.name),
+            variationType: variationType
+          });
+        } catch (e) {
+          console.error(`Erro ao carregar variação: ${variety.pokemon.name}`, e);
+        }
+      }
+
+      setVariationsData(variations);
+    } catch (e) {
+      setVariationsData([]);
+    }
+  };
 
   const handlePrev = () => {
     setHasSearched(true);
-    loadPokemon(currentId > 1 ? currentId - 1 : 1010)
-  }
-  
+    loadPokemon(currentId > 1 ? currentId - 1 : MAX_ID);
+  };
+
   const handleNext = () => {
     setHasSearched(true);
-    loadPokemon(currentId < 1010 ? currentId + 1 : 1)
-  }
+    loadPokemon(currentId < MAX_ID ? currentId + 1 : 1);
+  };
 
   if (loading) {
     return (
@@ -140,7 +251,7 @@ function PokedexShell({ searchQuery }) {
           Carregando dados...
         </div>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -150,24 +261,24 @@ function PokedexShell({ searchQuery }) {
           {error}
         </div>
       </div>
-    )
+    );
   }
 
   if (!pokemon || !species) return null;
 
   const artwork = pokemon.sprites.other?.['official-artwork']?.front_default || pokemon.sprites.front_default;
-  const genus = species.genera.find(g => g.language.name === 'pt') || species.genera.find(g => g.language.name === 'en')
+  const genus = species.genera.find(g => g.language.name === 'pt') || species.genera.find(g => g.language.name === 'en');
   const flavorText = pickFlavorText(species.flavor_text_entries);
-  const gen = species.generation.name.split('-')[1] || ''
+  const gen = species.generation.name.split('-')[1] || '';
 
   return (
     <div className="flex justify-center w-full">
       <div className="flex w-full max-w-[980px] filter drop-shadow-[0_30px_40px_rgba(0,0,0,0.55)]">
-        
+
         {/* ===== PANEL LEFT ===== */}
         <div className="relative flex-[1.05] min-w-0 z-[2] rounded-l-[26px] rounded-r-[8px] p-[18px]"
           style={{ background: 'linear-gradient(160deg, #FF6B4A 0%, #E3350D 18%, #A81F0E 78%, #701509 100%)' }}>
-          
+
           <div className="flex items-center gap-[10px] mb-[14px] pl-1">
             <div className="w-[52px] h-[52px] rounded-full flex-none relative animate-[lensGlow_3.2s_ease-in-out_infinite]"
               style={{ background: 'radial-gradient(circle at 32% 28%, #cdeeff 0%, #79B7EE 30%, #3E82C4 60%, #265D8F 100%)', border: '4px solid #F5F4EF', boxShadow: '0 0 0 3px #1B1B19, inset 0 0 10px rgba(255,255,255,0.6)' }}>
@@ -244,7 +355,7 @@ function PokedexShell({ searchQuery }) {
 
         {/* ===== PANEL RIGHT ===== */}
         <div className="relative flex-1 min-w-0 z-[1] rounded-l-[8px] rounded-r-[26px] p-[18px] -translate-x-2 border-l-2 border-black/25" style={{ background: 'linear-gradient(160deg, #FF6B4A 0%, #E3350D 18%, #A81F0E 78%, #701509 100%)' }}>
-          
+
           <div className="rounded-[10px] p-2 px-3 mb-[14px] font-['VT323'] text-[#8fdc9e] text-[17px] tracking-[0.5px] min-h-[42px] flex items-center overflow-hidden whitespace-nowrap" style={{ background: '#182b1c', border: '6px solid #1B1B19' }}>
             #{String(pokemon.id).padStart(4, '0')} {capitalize(pokemon.name)} — dados carregados
           </div>
@@ -254,17 +365,17 @@ function PokedexShell({ searchQuery }) {
               { id: 'info', label: 'Informações', icon: '📋' },
               { id: 'stats', label: 'Estatísticas', icon: '⚔️' },
               { id: 'evo', label: 'Evoluções', icon: '🧬' },
-              { id: 'abilities', label: 'Habilidades', icon: '🎒' },
+              { id: 'variations', label: 'Variações', icon: '✨' },
+              { id: 'abilities', label: 'Habilidades', icon: '💪' },
               { id: 'habitat', label: 'Habitat', icon: '🌎' }
             ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`border-none rounded-[12px] py-3 px-[6px] font-bold text-[12px] flex flex-col items-center gap-1 shadow-[0_3px_0_#163f5e,inset_0_1px_0_rgba(255,255,255,0.15)] transition-transform active:translate-y-[2px] ${
-                  activeTab === tab.id
+                className={`border-none rounded-[12px] py-3 px-[6px] font-bold text-[12px] flex flex-col items-center gap-1 shadow-[0_3px_0_#163f5e,inset_0_1px_0_rgba(255,255,255,0.15)] transition-transform active:translate-y-[2px] ${activeTab === tab.id
                     ? 'bg-[#FFD93D] text-[#1B1B19] shadow-[0_3px_0_#b39a1f,inset_0_1px_0_rgba(255,255,255,0.4)]'
                     : 'bg-[#265D8F] text-white hover:bg-[#3E82C4]'
-                }`}
+                  }`}
               >
                 <span className="text-[18px]">{tab.icon}</span>
                 <span>{tab.label}</span>
@@ -273,7 +384,7 @@ function PokedexShell({ searchQuery }) {
           </div>
 
           <div className="rounded-[16px] p-4 min-h-[300px] text-[#1B1B19] shadow-[inset_0_0_0_3px_rgba(0,0,0,0.1)]" style={{ background: '#F5F4EF', border: '10px solid #1B1B19' }}>
-            
+
             {activeTab === 'info' && (
               <div>
                 <h3 className="font-['Press_Start_2P'] text-[13px] text-[#A81F0E] m-0 mb-3 tracking-[0.5px]">INFORMAÇÕES</h3>
@@ -303,7 +414,7 @@ function PokedexShell({ searchQuery }) {
                         </div>
                         <span className="w-[34px] text-right font-['VT323'] text-[18px] flex-none">{s.base_stat}</span>
                       </div>
-                    )
+                    );
                   })}
                 </div>
               </div>
@@ -312,20 +423,74 @@ function PokedexShell({ searchQuery }) {
             {activeTab === 'evo' && (
               <div>
                 <h3 className="font-['Press_Start_2P'] text-[13px] text-[#A81F0E] m-0 mb-3 tracking-[0.5px]">LINHA EVOLUTIVA</h3>
-                {evoData.length > 0 ? (
-                  <div className="flex items-center justify-center gap-[10px] flex-wrap">
-                    {evoData.map((n, i) => (
-                      <div key={n.id} className="flex flex-col items-center gap-1">
-                        {i > 0 && <span className="text-[20px] text-[#E3350D] font-extrabold">→</span>}
-                        <div className="flex flex-col items-center gap-1 w-[90px]">
-                          <img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${n.id}.png`} alt={n.name} className="w-16 h-16 object-contain bg-[#E9F1E6] rounded-xl border border-[#c3d6bd]" loading="lazy" />
-                          <span className="text-[12px] font-bold capitalize">{n.name}</span>
+                {evoData.evolutions.length > 0 ? (
+                  <div className="space-y-2 max-h-[280px] overflow-y-auto pr-2 custom-scrollbar">
+                    {evoData.evolutions.map((evo, i) => (
+                      <div key={evo.id} className="flex items-center gap-3 bg-[#E9F1E6] border border-[#c3d6bd] rounded-lg p-2">
+                        <img
+                          src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${evoData.baseId}.png`}
+                          alt={evoData.baseName}
+                          className="w-12 h-12 object-contain bg-white rounded-lg flex-none"
+                        />
+                        <span className="text-[#E3350D] font-bold text-lg flex-none">→</span>
+                        <img
+                          src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${evo.id}.png`}
+                          alt={evo.name}
+                          className="w-12 h-12 object-contain bg-white rounded-lg flex-none"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-bold text-[13px] capitalize text-[#1B1B19] m-0">{evo.name}</p>
+                          {evo.condition && (
+                            <p className="text-[10px] text-[#46453F] italic truncate m-0">{evo.condition}</p>
+                          )}
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
                   <p className="text-[14px] text-[#46453F]">Sem dados de evolução disponíveis.</p>
+                )}
+              </div>
+            )}
+
+            {activeTab === 'variations' && (
+              <div>
+                <h3 className="font-['Press_Start_2P'] text-[13px] text-[#A81F0E] m-0 mb-3 tracking-[0.5px]">VARIAÇÕES</h3>
+                {variationsData.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-3 max-h-[320px] overflow-y-auto pr-2 custom-scrollbar">
+                    {variationsData.map((variation) => (
+                      <div key={variation.id} className="flex items-center gap-3 bg-[#E9F1E6] border border-[#c3d6bd] rounded-xl p-3 hover:shadow-md transition-shadow">
+                        <img
+                          src={variation.sprite || `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${variation.id}.png`}
+                          alt={variation.name}
+                          className="w-16 h-16 object-contain bg-white rounded-lg flex-none"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className="font-bold text-[14px] capitalize text-[#1B1B19] m-0">{variation.name}</p>
+                            <span className="text-[10px] bg-[#FFD93D] text-[#1B1B19] px-2 py-0.5 rounded-full font-bold uppercase">
+                              {variation.variationType}
+                            </span>
+                          </div>
+                          <div className="flex gap-1 flex-wrap">
+                            {variation.types.map(type => (
+                              <span
+                                key={type}
+                                className="text-[10px] px-2 py-0.5 rounded-full text-white font-bold capitalize"
+                                style={{ background: typeColors[type] || '#A8A77A' }}
+                              >
+                                {type}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-[14px] text-[#46453F] text-center py-8">
+                    Este Pokémon não possui variações registradas.
+                  </p>
                 )}
               </div>
             )}
@@ -361,7 +526,7 @@ function PokedexShell({ searchQuery }) {
                     <div className="flex flex-wrap gap-1.5">
                       {habitatData.weak?.length > 0 ? habitatData.weak.map(t => (
                         <span key={t} className="px-2.5 py-1 rounded-full text-[12px] font-bold text-white capitalize" style={{ background: typeColors[t] || '#A8A77A' }}>{t}</span>
-                      )) : <p className="text-[12px] text-[#46453F]">Nenhuma fraqueza notável.</p>}
+                      )) : <p className="text-[12px] text-[#46453F] m-0">Nenhuma fraqueza notável.</p>}
                     </div>
                   </div>
                   <div>
@@ -369,7 +534,7 @@ function PokedexShell({ searchQuery }) {
                     <div className="flex flex-wrap gap-1.5">
                       {habitatData.resist?.length > 0 ? habitatData.resist.map(t => (
                         <span key={t} className="px-2.5 py-1 rounded-full text-[12px] font-bold text-white capitalize" style={{ background: typeColors[t] || '#A8A77A' }}>{t}</span>
-                      )) : <p className="text-[12px] text-[#46453F]">Nenhuma resistência notável.</p>}
+                      )) : <p className="text-[12px] text-[#46453F] m-0">Nenhuma resistência notável.</p>}
                     </div>
                   </div>
                 </div>
@@ -387,7 +552,7 @@ function PokedexShell({ searchQuery }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default PokedexShell
+export default PokedexShell;
